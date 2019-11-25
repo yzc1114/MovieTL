@@ -1,24 +1,62 @@
+package Entity;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
+
+import Utils.Utils;
 
 public class Movie implements Serializable {
     private String title = null;
-    private ArrayList<Product> products = null;
-    private ArrayList<String> genres = null;
-    private ArrayList<String> starrings = null;
-    private ArrayList<String> supportingActors = null;
-    private ArrayList<String> actors = null;
-    private ArrayList<String> directors = null;
-    private String runTime = null;
+    private ArrayList<Product> products = new ArrayList<>();
+    private ArrayList<String> genres = new ArrayList<>();
+    private ArrayList<String> starrings = new ArrayList<>();
+    private ArrayList<String> supportingActors = new ArrayList<>();
+    private ArrayList<String> actors = new ArrayList<>();
+    private ArrayList<String> directors = new ArrayList<>();
+    private Integer runTime = null;
     private String releaseDate = null;
-    private String releaseYear = null;
+    private Integer releaseMonth = null;
+    private Integer releaseDay = null;
+    private Integer releaseYear = null;
     private Double ranking = null;
 
-    public String getReleaseYear() {
+    public Integer getReleaseMonth() {
+        return releaseMonth;
+    }
+
+    public void setReleaseMonth(Integer releaseMonth) {
+        this.releaseMonth = releaseMonth;
+    }
+
+    public Integer getReleaseDay() {
+        return releaseDay;
+    }
+
+    public void setReleaseDay(Integer releaseDay) {
+        this.releaseDay = releaseDay;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Movie)) return false;
+        Movie movie = (Movie) o;
+        boolean titleSame = Utils.isSame(getTitle(), movie.getTitle());
+        boolean runTimeSame = getRunTime().equals(movie.getRunTime());
+        return titleSame && runTimeSame;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTitle(), getActors(), getDirectors());
+    }
+
+    public Integer getReleaseYear() {
         return releaseYear;
     }
 
-    public void setReleaseYear(String releaseYear) {
+    public void setReleaseYear(Integer releaseYear) {
         this.releaseYear = releaseYear;
     }
 
@@ -86,11 +124,11 @@ public class Movie implements Serializable {
         this.directors = directors;
     }
 
-    public String getRunTime() {
+    public Integer getRunTime() {
         return runTime;
     }
 
-    public void setRunTime(String runTime) {
+    public void setRunTime(Integer runTime) {
         this.runTime = runTime;
     }
 

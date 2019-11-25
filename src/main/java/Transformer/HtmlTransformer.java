@@ -1,5 +1,9 @@
+package Transformer;
+
+import Entity.Movie;
+import Entity.Product;
+import Utils.Utils;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONPObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+
+import static Utils.Utils.transformTitle;
 
 public class HtmlTransformer {
     enum MovieType{
@@ -40,24 +46,29 @@ public class HtmlTransformer {
             case Prime:
                 return parsePrimeDoc(productId, doc);
             case Normal:
-                return parseNormalDoc(doc);
+                return parseNormalDoc(productId, doc);
         }
         return null;
     }
 
-    private Movie parseNormalDoc(Document doc) {
+    private Movie parseNormalDoc(String selfProductId, Document doc) {
         try{
             ArrayList<Product> products = new ArrayList<>();
             ArrayList<String> actors = new ArrayList<>();
             ArrayList<String> directors = new ArrayList<>();
             String title = null;
-            String runTime = null;
+            Integer runTime = null;
+            String runTimeStr = null;
             String releaseDate = null;
+            Integer releaseYear = null;
+            Integer releaseMonth = null;
+            Integer releaseDay = null;
             Double ranking = null;
             Movie movie = new Movie();
 
             Elements titleElements = doc.select("#productTitle");
             title = titleElements.first().text().trim();
+            title = transformTitle(title);
             System.out.println(title);
             movie.setTitle(title);
             Elements formats = doc.select("#tmmSwatches > ul > li");
@@ -100,9 +111,17 @@ public class HtmlTransformer {
                     }
                 }else if("DVD Release Date:".equals(b)){
                     releaseDate = content.text().split(": ")[1];
+                    int[] yearMonthDay = Utils.parseYearMonthDay(releaseDate);
+                    if(yearMonthDay == null){
+                        continue;
+                    }
+                    releaseYear = yearMonthDay[0];
+                    releaseMonth = yearMonthDay[1];
+                    releaseDay = yearMonthDay[2];
                     System.out.println(releaseDate);
                 }else if("Run Time:".equals(b)){
-                    runTime = content.text().split(": ")[1];
+                    runTimeStr = content.text().split(": ")[1];
+                    runTime = Utils.parseNormalRunTime(runTimeStr);
                     System.out.println(runTime);
                 }else if("Average Customer Review:".equals(b)){
                     System.out.println(content);
@@ -129,9 +148,13 @@ public class HtmlTransformer {
             movie.setRanking(ranking);
             movie.setRunTime(runTime);
             movie.setReleaseDate(releaseDate);
+            movie.setReleaseYear(releaseYear);
+            movie.setReleaseDay(releaseDay);
+            movie.setReleaseMonth(releaseMonth);
             return movie;
         }catch (Exception e){
             e.printStackTrace();
+            System.out.println("error in parsing " + selfProductId);
             return null;
         }
     }
@@ -145,19 +168,28 @@ public class HtmlTransformer {
             ArrayList<String> starrings = new ArrayList<>();
             ArrayList<String> directors = new ArrayList<>();
             ArrayList<String> genres = new ArrayList<>();
-            String releaseYear = null;
-            String runTime = null;
+            Integer releaseYear = null;
+            String releaseYearStr = null;
+            Integer runTime = null;
+            String runTimeStr = null;
             String title = null;
             Double ranking = null;
             Movie movie = new Movie();
 
             title = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > h1").first().text();
+            title = transformTitle(title);
             System.out.println(title);
             Elements introLine = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > div.Ljc8d7._3-UIK-._38qi5F.dv-node-dp-badges.uAeEjV");
             Element t = introLine.select("[data-automation-id=runtime-badge]").first();
-            runTime = t == null ? null : t.text();
+            runTimeStr = t == null ? null : t.text();
+            runTime = Utils.parsePrimeRunTime(runTimeStr);
             t = introLine.select("[data-automation-id=release-year-badge]").first();
-            releaseYear = t == null ? null : t.text();
+            releaseYearStr = t == null ? null : t.text();
+            try{
+                releaseYear = releaseYearStr == null ? null : Integer.parseInt(releaseYearStr);
+            }catch (Exception e){
+                //
+            }
 
             Elements intros = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > div._2vWb4y.dv-dp-node-meta-info > div > div").first().children();
             for(Element e : intros){
@@ -250,6 +282,7 @@ public class HtmlTransformer {
             return movie;
         }catch (Exception e){
             e.printStackTrace();
+            System.out.println("error in parsing " + selfProductId);
             return null;
         }
 
