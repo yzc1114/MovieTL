@@ -11,22 +11,15 @@ public class Movie implements Serializable {
     private ArrayList<String> directors = null;
     private String runTime = null;
     private String releaseDate = null;
+    private String releaseYear = null;
     private Double ranking = null;
 
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "title='" + title + '\'' +
-                ", products=" + products +
-                ", genres=" + genres +
-                ", starrings=" + starrings +
-                ", supportingActors=" + supportingActors +
-                ", actors=" + actors +
-                ", directors=" + directors +
-                ", runTime='" + runTime + '\'' +
-                ", releaseDate='" + releaseDate + '\'' +
-                ", ranking=" + ranking +
-                '}';
+    public String getReleaseYear() {
+        return releaseYear;
+    }
+
+    public void setReleaseYear(String releaseYear) {
+        this.releaseYear = releaseYear;
     }
 
     public Double getRanking() {

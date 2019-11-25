@@ -45,7 +45,7 @@ public class HtmlTransformer {
         return null;
     }
 
-    private Movie parseNormalDoc(Document doc){
+    private Movie parseNormalDoc(Document doc) {
         try{
             ArrayList<Product> products = new ArrayList<>();
             ArrayList<String> actors = new ArrayList<>();
@@ -65,13 +65,13 @@ public class HtmlTransformer {
                 System.out.println(format);
                 String a = format.select("a").first().attr("href");
                 System.out.println(a);
-                String productId = getProductIdFromUrl(a);
+                String productId = Utils.getProductIdFromUrl(a);
                 Elements formatAndPrice = format.select("span > span > span > a > span");
                 if(formatAndPrice.size() != 2){
                     continue;
                 }
                 String formatStr = formatAndPrice.first().text();
-                String priceStr = formatAndPrice.last().text();
+                String priceStr = Utils.parseMoneyFromStr(formatAndPrice.last().text());
                 Product product = new Product();
                 product.setFormat(formatStr);
                 product.setPrice(priceStr);
@@ -136,27 +136,6 @@ public class HtmlTransformer {
         }
     }
 
-    private String getProductIdFromUrl(String url){
-        try{
-            String s = null;
-            if(url.contains("gp/product/")){
-                s = "gp/product/";
-            }else if(url.contains("dp/product/")){
-                s = "dp/product/";
-            }else if(url.contains("/gp/")){
-                s = "/gp/";
-            }else if(url.contains("/dp/")){
-                s = "/dp/";
-            }else{
-                return null;
-            }
-            return url.split(s)[1].split("/", 0)[0];
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 
     private Movie parsePrimeDoc(String selfProductId, Document doc){
         try{
@@ -166,12 +145,19 @@ public class HtmlTransformer {
             ArrayList<String> starrings = new ArrayList<>();
             ArrayList<String> directors = new ArrayList<>();
             ArrayList<String> genres = new ArrayList<>();
+            String releaseYear = null;
+            String runTime = null;
             String title = null;
             Double ranking = null;
             Movie movie = new Movie();
 
             title = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > h1").first().text();
             System.out.println(title);
+            Elements introLine = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > div.Ljc8d7._3-UIK-._38qi5F.dv-node-dp-badges.uAeEjV");
+            Element t = introLine.select("[data-automation-id=runtime-badge]").first();
+            runTime = t == null ? null : t.text();
+            t = introLine.select("[data-automation-id=release-year-badge]").first();
+            releaseYear = t == null ? null : t.text();
 
             Elements intros = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > div._2vWb4y.dv-dp-node-meta-info > div > div").first().children();
             for(Element e : intros){
@@ -201,8 +187,8 @@ public class HtmlTransformer {
                 System.out.println(e);
             }
 
-            String primePrice = doc.select("#tvod-btn-B07PQNR23J-ab > button > span").text();
-            System.out.println(primePrice);
+            //String primePrice = doc.select("#tvod-btn-B07PQNR23J-ab > button > span").text();
+            //System.out.println(primePrice);
             Product selfProduct = new Product();
             selfProduct.setProductId(selfProductId);
             selfProduct.setFormat("Prime Video");
@@ -212,7 +198,8 @@ public class HtmlTransformer {
             for (Element content : contents) {
                 String type = content.select("dt > span").first().text();
                 if("Supporting actors".equals(type)){
-                    for (Element element : content.select("dd > a")) {
+
+                    for (Element element : content.select("a")) {
                         String supportingActor = element.text();
                         System.out.println(supportingActor);
                         supportingActors.add(supportingActor);
@@ -226,7 +213,7 @@ public class HtmlTransformer {
             Elements otherFormats = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div:nth-child(25) > div > section:nth-child(5) > div > div > div").first().children();
             for (Element otherFormat : otherFormats) {
                 String a = otherFormat.attr("href");
-                String productId = getProductIdFromUrl(a);
+                String productId = Utils.getProductIdFromUrl(a);
                 System.out.println(productId);
                 String formatAndPriceFullText = otherFormat.select("div > div").first().text().trim().replace(" +", " ");
                 String[] splits = formatAndPriceFullText.split(" ");
@@ -258,6 +245,8 @@ public class HtmlTransformer {
             movie.setStarrings(starrings);
             movie.setSupportingActors(supportingActors);
             movie.setRanking(ranking);
+            movie.setReleaseYear(releaseYear);
+            movie.setRunTime(runTime);
             return movie;
         }catch (Exception e){
             e.printStackTrace();
@@ -269,7 +258,7 @@ public class HtmlTransformer {
 
     public static void main(String[] args) {
         HtmlTransformer htmlTransformer = new HtmlTransformer();
-        File file = new File("C:\\Users\\Administrator\\Desktop\\t5.html");
+        File file = new File("C:\\Users\\Administrator\\Desktop\\B000YEINPG.html");
         try{
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
