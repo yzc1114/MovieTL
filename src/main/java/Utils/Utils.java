@@ -59,27 +59,36 @@ public class Utils {
             return null;
         }
         String money = m.group(1);
-        System.out.println(money);
+        //System.out.println(money);
         return money.trim();
     }
 
     public static String transformTitle(String originTitle){
+        if(originTitle == null){
+            return null;
+        }
         originTitle = originTitle.replaceAll("\\(.*\\)", "");
         return originTitle.replaceAll("&", "and").trim();
     }
 
     public static Integer parseNormalRunTime(String originRunTime){
-        if(!originRunTime.contains("minutes")){
+        if(originRunTime == null){
+            return null;
+        }
+        if(!originRunTime.contains(" minutes")){
             return null;
         }
         try{
-            return Integer.parseInt(originRunTime.split("minutes")[0]);
+            return Integer.parseInt(originRunTime.split(" minutes")[0]);
         }catch (Exception e){
             return null;
         }
     }
 
     public static Integer parsePrimeRunTime(String originRunTime){
+        if(originRunTime == null){
+            return null;
+        }
         String p1Str = "^ *(\\d*) *h *(\\d*) *min *$";
         String p2Str = "^ *(\\d*) *min *$";
         Pattern p = Pattern.compile(p1Str);
@@ -87,8 +96,8 @@ public class Utils {
         Integer res = null;
         try{
             if(m.find()){
-                //System.out.println(m.group(1));
-                //System.out.println(m.group(2));
+                ////System.out.println(m.group(1));
+                ////System.out.println(m.group(2));
                 return Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));
             }
             p = Pattern.compile(p2Str);
@@ -111,9 +120,9 @@ public class Utils {
                 String year = m.group(3);
                 String month = m.group(1);
                 String day = m.group(2);
-                System.out.println("year = " + year);
-                System.out.println("month = " + month);
-                System.out.println("day = " + day);
+                //System.out.println("year = " + year);
+                //System.out.println("month = " + month);
+                //System.out.println("day = " + day);
                 int[] res = new int[3];
                 res[0] = Integer.parseInt(year);
                 if(!month2Int.containsKey(month.toLowerCase())){
@@ -152,7 +161,12 @@ public class Utils {
     }
 
     public static boolean hasSameInArray(String word, ArrayList<String> a){
+        if(word == null || a == null){
+            return false;
+        }
         for (String s : a) {
+            if(s == null)
+                continue;
             if(isSame(word, s)){
                 return true;
             }
@@ -161,7 +175,13 @@ public class Utils {
     }
 
     public static boolean hasSameInArray(Product p, ArrayList<Product> a){
+        if(p == null || a == null){
+            return false;
+        }
         for (Product s : a) {
+            if(s == null || p.getProductId() == null || s.getProductId() == null){
+                continue;
+            }
             if(p.getProductId().equals(s.getProductId())){
                 return true;
             }
@@ -170,14 +190,14 @@ public class Utils {
     }
 
     public static void main(String[] args) {
-//        System.out.println(parsePrimeRunTime("1 h 65min"));
-//        System.out.println(parsePrimeRunTime("aff 1h 65 min"));
-//        System.out.println(parsePrimeRunTime("  1  h 65  min  "));
-//        System.out.println(parsePrimeRunTime("1h65min"));
-//        System.out.println(parsePrimeRunTime(" 1hour 65minutes "));
+//        //System.out.println(parsePrimeRunTime("1 h 65min"));
+//        //System.out.println(parsePrimeRunTime("aff 1h 65 min"));
+//        //System.out.println(parsePrimeRunTime("  1  h 65  min  "));
+//        //System.out.println(parsePrimeRunTime("1h65min"));
+//        //System.out.println(parsePrimeRunTime(" 1hour 65minutes "));
         //parseMoneyFromStr("sdfsdgf$1.00sd$233.55210");
-        System.out.println("transformTitle(\"asdasd (fuck)\") = " + transformTitle("asdasd (fuck)"));
-        //System.out.println("parseYearMonthDay(\"November 15, 2222\") = " + Arrays.toString(parseYearMonthDay("May 29, 2008")));
+        //System.out.println("transformTitle(\"asdasd (fuck)\") = " + transformTitle("asdasd (fuck)"));
+        ////System.out.println("parseYearMonthDay(\"November 15, 2222\") = " + Arrays.toString(parseYearMonthDay("May 29, 2008")));
     }
 
 }

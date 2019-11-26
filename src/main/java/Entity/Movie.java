@@ -42,6 +42,12 @@ public class Movie implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Movie)) return false;
         Movie movie = (Movie) o;
+        if(getTitle() == null){
+            return false;
+        }
+        if(getRunTime() == null){
+            return getTitle().equals(movie.getTitle());
+        }
         boolean titleSame = Utils.isSame(getTitle(), movie.getTitle());
         boolean runTimeSame = getRunTime().equals(movie.getRunTime());
         return titleSame && runTimeSame;

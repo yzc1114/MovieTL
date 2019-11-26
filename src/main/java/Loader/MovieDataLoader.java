@@ -19,6 +19,9 @@ public class MovieDataLoader {
     private final ConcurrentHashMap<Integer, ReentrantLock> runTime2Mutex = new ConcurrentHashMap<>();
 
     public void consumeMovie(Movie newMovie){
+        if(newMovie == null){
+            return;
+        }
         Integer currRunTime = newMovie.getRunTime() == null ? 0 : newMovie.getRunTime();
         ArrayList<Movie> movies;
         ReentrantLock mutex;

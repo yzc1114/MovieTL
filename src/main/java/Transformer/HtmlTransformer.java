@@ -35,13 +35,13 @@ public class HtmlTransformer {
         }
     }
 
-    private Movie parseDoc(String productId, Document doc){
+    public Movie parseDoc(String productId, Document doc){
         MovieType type = getDocType(doc);
         switch (type){
             case Null:
                 //never should happen
-                System.out.println("parseDoc遇到Null");
-                System.exit(-1);
+                //System.out.println("parseDoc遇到Null");
+                //System.exit(-1);
                 break;
             case Prime:
                 return parsePrimeDoc(productId, doc);
@@ -69,13 +69,13 @@ public class HtmlTransformer {
             Elements titleElements = doc.select("#productTitle");
             title = titleElements.first().text().trim();
             title = transformTitle(title);
-            System.out.println(title);
+            //System.out.println(title);
             movie.setTitle(title);
             Elements formats = doc.select("#tmmSwatches > ul > li");
             for (Element format : formats) {
-                System.out.println(format);
+                //System.out.println(format);
                 String a = format.select("a").first().attr("href");
-                System.out.println(a);
+                //System.out.println(a);
                 String productId = Utils.getProductIdFromUrl(a);
                 Elements formatAndPrice = format.select("span > span > span > a > span");
                 if(formatAndPrice.size() != 2){
@@ -91,7 +91,7 @@ public class HtmlTransformer {
             }
             Elements contents = doc.select("#detail-bullets > table > tbody > tr > td > div > ul > li");
             for (Element content : contents) {
-                System.out.println(content);
+                //System.out.println(content);
                 String b = content.select("b").first().text();
                 if ("Actors:".equals(b)) {
                     //全部演员
@@ -99,14 +99,14 @@ public class HtmlTransformer {
                     for (Element actorsEle : actorsEles) {
                         String actorName = actorsEle.text();
                         actors.add(actorName);
-                        System.out.println(actorName);
+                        //System.out.println(actorName);
                     }
                 }else if("Directors:".equals(b)){
                     //全部导演
                     Elements directorsEles = content.select("a");
                     for (Element directorsEle : directorsEles) {
                         String directorName = directorsEle.text();
-                        System.out.println(directorName);
+                        //System.out.println(directorName);
                         directors.add(directorName);
                     }
                 }else if("DVD Release Date:".equals(b)){
@@ -118,13 +118,13 @@ public class HtmlTransformer {
                     releaseYear = yearMonthDay[0];
                     releaseMonth = yearMonthDay[1];
                     releaseDay = yearMonthDay[2];
-                    System.out.println(releaseDate);
+                    //System.out.println(releaseDate);
                 }else if("Run Time:".equals(b)){
                     runTimeStr = content.text().split(": ")[1];
                     runTime = Utils.parseNormalRunTime(runTimeStr);
-                    System.out.println(runTime);
+                    //System.out.println(runTime);
                 }else if("Average Customer Review:".equals(b)){
-                    System.out.println(content);
+                    //System.out.println(content);
                     Elements elements = content.select("span > span > a > i > span");
                     if(elements.size() != 1){
                         continue;
@@ -154,7 +154,7 @@ public class HtmlTransformer {
             return movie;
         }catch (Exception e){
             e.printStackTrace();
-            System.out.println("error in parsing " + selfProductId);
+            //System.out.println("error in parsing " + selfProductId);
             return null;
         }
     }
@@ -178,7 +178,7 @@ public class HtmlTransformer {
 
             title = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > h1").first().text();
             title = transformTitle(title);
-            System.out.println(title);
+            //System.out.println(title);
             Elements introLine = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div.avu-content.avu-section > div > div > div.DVWebNode-detail-atf-wrapper.DVWebNode > div.av-detail-section > div > div.Ljc8d7._3-UIK-._38qi5F.dv-node-dp-badges.uAeEjV");
             Element t = introLine.select("[data-automation-id=runtime-badge]").first();
             runTimeStr = t == null ? null : t.text();
@@ -198,29 +198,29 @@ public class HtmlTransformer {
                     Elements es = e.select("dd > a");
                     for (Element ee : es) {
                         String genre = ee.text();
-                        System.out.println(genre);
+                        //System.out.println(genre);
                         genres.add(genre);
                     }
                 }else if("Director".equals(type)){
                     Elements es = e.select("dd > a");
                     for (Element ee : es) {
                         String director = ee.text();
-                        System.out.println(director);
+                        //System.out.println(director);
                         directors.add(director);
                     }
                 }else if("Starring".equals(type)){
                     Elements es = e.select("dd > a");
                     for (Element ee : es) {
                         String starring = ee.text();
-                        System.out.println(starring);
+                        //System.out.println(starring);
                         starrings.add(starring);
                     }
                 }
-                System.out.println(e);
+                //System.out.println(e);
             }
 
             //String primePrice = doc.select("#tvod-btn-B07PQNR23J-ab > button > span").text();
-            //System.out.println(primePrice);
+            ////System.out.println(primePrice);
             Product selfProduct = new Product();
             selfProduct.setProductId(selfProductId);
             selfProduct.setFormat("Prime Video");
@@ -233,7 +233,7 @@ public class HtmlTransformer {
 
                     for (Element element : content.select("a")) {
                         String supportingActor = element.text();
-                        System.out.println(supportingActor);
+                        //System.out.println(supportingActor);
                         supportingActors.add(supportingActor);
                     }
                 }
@@ -242,31 +242,37 @@ public class HtmlTransformer {
             actors.addAll(starrings);
             actors.addAll(supportingActors);
 
-            Elements otherFormats = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div:nth-child(25) > div > section:nth-child(5) > div > div > div").first().children();
-            for (Element otherFormat : otherFormats) {
-                String a = otherFormat.attr("href");
-                String productId = Utils.getProductIdFromUrl(a);
-                System.out.println(productId);
-                String formatAndPriceFullText = otherFormat.select("div > div").first().text().trim().replace(" +", " ");
-                String[] splits = formatAndPriceFullText.split(" ");
-                String format = splits[0];
-                String price = splits[splits.length - 1];
-                System.out.println(format);
-                System.out.println(price);
-                Product p = new Product();
-                p.setProductId(productId);
-                p.setFormat(format);
-                p.setPrice(price);
-                products.add(p);
+            Element otherFormatsEle = doc.select("#a-page > div.av-page-desktop.avu-retail-page > div:nth-child(25) > div > section:nth-child(5) > div > div > div").first();
+            if(otherFormatsEle != null){
+                Elements otherFormats = otherFormatsEle.children();
+                for (Element otherFormat : otherFormats) {
+                    String a = otherFormat.attr("href");
+                    String productId = Utils.getProductIdFromUrl(a);
+                    //System.out.println(productId);
+                    String formatAndPriceFullText = otherFormat.select("div > div").first().text().trim().replace(" +", " ");
+                    String[] splits = formatAndPriceFullText.split(" ");
+                    String format = splits[0];
+                    String price = splits[splits.length - 1];
+                    //System.out.println(format);
+                    //System.out.println(price);
+                    Product p = new Product();
+                    p.setProductId(productId);
+                    p.setFormat(format);
+                    p.setPrice(price);
+                    products.add(p);
+                }
             }
 
-            String rankingStr = doc.select("#reviewsMedley > div > div.a-fixed-left-grid-col.a-col-left > div.a-section.a-spacing-none.a-spacing-top-mini.cr-widget-ACR > div.a-fixed-left-grid.AverageCustomerReviews.a-spacing-small > div > div.a-fixed-left-grid-col.aok-align-center.a-col-right > div > span > span > a > span").first().text();
-            System.out.println(rankingStr);
-            if(rankingStr.contains(" out")){
-                try{
-                    ranking = Double.parseDouble(rankingStr.split(" out")[0]);
-                }catch (Exception e){
-                    //
+            Element rankingStrEle = doc.select("#reviewsMedley > div > div.a-fixed-left-grid-col.a-col-left > div.a-section.a-spacing-none.a-spacing-top-mini.cr-widget-ACR > div.a-fixed-left-grid.AverageCustomerReviews.a-spacing-small > div > div.a-fixed-left-grid-col.aok-align-center.a-col-right > div > span > span > a > span").first();
+            if(rankingStrEle != null){
+                String rankingStr = rankingStrEle.text();
+                //System.out.println(rankingStr);
+                if(rankingStr.contains(" out")){
+                    try{
+                        ranking = Double.parseDouble(rankingStr.split(" out")[0]);
+                    }catch (Exception e){
+                        //
+                    }
                 }
             }
             movie.setDirectors(directors);
@@ -282,7 +288,7 @@ public class HtmlTransformer {
             return movie;
         }catch (Exception e){
             e.printStackTrace();
-            System.out.println("error in parsing " + selfProductId);
+            //System.out.println("error in parsing " + selfProductId);
             return null;
         }
 
@@ -306,11 +312,11 @@ public class HtmlTransformer {
             Document doc = Jsoup.parse(builder.toString());
             MovieType type = htmlTransformer.getDocType(doc);
             Movie movie = htmlTransformer.parseDoc("", doc);
-            System.out.println(movie);
+            //System.out.println(movie);
             String jsonStr = JSON.toJSONString(movie, true);
-            System.out.println(jsonStr);
-            //System.out.println(doc.html());
-            System.out.println(type);
+            //System.out.println(jsonStr);
+            ////System.out.println(doc.html());
+            //System.out.println(type);
         }catch (Exception e){
             e.printStackTrace();
         }
