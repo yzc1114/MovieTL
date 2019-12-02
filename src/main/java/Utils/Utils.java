@@ -207,6 +207,14 @@ public class Utils {
         return false;
     }
 
+    public static ArrayList removeDuplicated(ArrayList a){
+        HashSet s = new HashSet();
+        s.addAll(a);
+        ArrayList r = new ArrayList();
+        r.addAll(s);
+        return r;
+    }
+
     public static void main(String[] args) {
 //        //System.out.println(parsePrimeRunTime("1 h 65min"));
 //        //System.out.println(parsePrimeRunTime("aff 1h 65 min"));

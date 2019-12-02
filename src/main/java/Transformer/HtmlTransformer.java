@@ -144,9 +144,9 @@ public class HtmlTransformer {
                 }
             }
             movie.setTitle(title);
-            movie.setActors(actors);
-            movie.setDirectors(directors);
-            movie.setProducts(products);
+            movie.setActors((ArrayList<String>)Utils.removeDuplicated(actors));
+            movie.setDirectors((ArrayList<String>)Utils.removeDuplicated(directors));
+            movie.setProducts((ArrayList<Product>)Utils.removeDuplicated(products));
             movie.setRanking(ranking);
             movie.setRunTime(runTime);
             movie.setReleaseDate(releaseDate);
@@ -278,13 +278,13 @@ public class HtmlTransformer {
                     }
                 }
             }
-            movie.setDirectors(directors);
-            movie.setActors(actors);
-            movie.setProducts(products);
+            movie.setDirectors((ArrayList<String>) Utils.removeDuplicated(directors));
+            movie.setActors((ArrayList<String>) Utils.removeDuplicated(actors));
+            movie.setProducts((ArrayList<Product>) Utils.removeDuplicated(products));
             movie.setTitle(title);
-            movie.setGenres(genres);
-            movie.setStarrings(starrings);
-            movie.setSupportingActors(supportingActors);
+            movie.setGenres((ArrayList<String>) Utils.removeDuplicated(genres));
+            movie.setStarrings((ArrayList<String>) Utils.removeDuplicated(starrings));
+            movie.setSupportingActors((ArrayList<String>) Utils.removeDuplicated(supportingActors));
             movie.setRanking(ranking);
             movie.setReleaseYear(releaseYear);
             movie.setRunTime(runTime);
