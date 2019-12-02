@@ -19,6 +19,7 @@ public class Movie implements Serializable {
     private Integer releaseMonth = null;
     private Integer releaseDay = null;
     private Integer releaseYear = null;
+    private Integer releaseWeekDay = null;
     private Double ranking = null;
 
     public Integer getReleaseMonth() {
@@ -35,6 +36,14 @@ public class Movie implements Serializable {
 
     public void setReleaseDay(Integer releaseDay) {
         this.releaseDay = releaseDay;
+    }
+
+    public Integer getReleaseWeekDay() {
+        return releaseWeekDay;
+    }
+
+    public void setReleaseWeekDay(Integer releaseWeekDay) {
+        this.releaseWeekDay = releaseWeekDay;
     }
 
     @Override

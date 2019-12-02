@@ -63,6 +63,7 @@ public class HtmlTransformer {
             Integer releaseYear = null;
             Integer releaseMonth = null;
             Integer releaseDay = null;
+            Integer releaseWeekDay = null;
             Double ranking = null;
             Movie movie = new Movie();
 
@@ -111,13 +112,14 @@ public class HtmlTransformer {
                     }
                 }else if("DVD Release Date:".equals(b)){
                     releaseDate = content.text().split(": ")[1];
-                    int[] yearMonthDay = Utils.parseYearMonthDay(releaseDate);
-                    if(yearMonthDay == null){
+                    int[] yearMonthDayWeekDay = Utils.parseYearMonthDayWeekDay(releaseDate);
+                    if(yearMonthDayWeekDay == null){
                         continue;
                     }
-                    releaseYear = yearMonthDay[0];
-                    releaseMonth = yearMonthDay[1];
-                    releaseDay = yearMonthDay[2];
+                    releaseYear = yearMonthDayWeekDay[0];
+                    releaseMonth = yearMonthDayWeekDay[1];
+                    releaseDay = yearMonthDayWeekDay[2];
+                    releaseWeekDay = yearMonthDayWeekDay[3];
                     //System.out.println(releaseDate);
                 }else if("Run Time:".equals(b)){
                     runTimeStr = content.text().split(": ")[1];
@@ -151,6 +153,7 @@ public class HtmlTransformer {
             movie.setReleaseYear(releaseYear);
             movie.setReleaseDay(releaseDay);
             movie.setReleaseMonth(releaseMonth);
+            movie.setReleaseWeekDay(releaseWeekDay);
             return movie;
         }catch (Exception e){
             e.printStackTrace();

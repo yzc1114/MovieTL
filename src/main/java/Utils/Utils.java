@@ -2,9 +2,9 @@ package Utils;
 
 import Entity.Product;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,7 +111,7 @@ public class Utils {
         }
     }
 
-    public static int[] parseYearMonthDay(String releaseDate){
+    public static int[] parseYearMonthDayWeekDay(String releaseDate){
         String pStr = "^.*?(\\w*) +(\\d+) *, *(\\d+).*$";
         Pattern p = Pattern.compile(pStr);
         Matcher m = p.matcher(releaseDate);
@@ -123,13 +123,31 @@ public class Utils {
                 //System.out.println("year = " + year);
                 //System.out.println("month = " + month);
                 //System.out.println("day = " + day);
-                int[] res = new int[3];
+                int[] res = new int[4];
                 res[0] = Integer.parseInt(year);
                 if(!month2Int.containsKey(month.toLowerCase())){
                     throw new Exception();
                 }
                 res[1] = month2Int.get(month.toLowerCase());
                 res[2] = Integer.parseInt(day);
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy mm dd");
+                Date d = null;
+                try{
+                    d = sdf.parse(res[0] +
+                            " " +
+                            (String.valueOf(res[1]).length() > 1 ? res[1] : "0" + res[1]) +
+                            " " +
+                            (String.valueOf(res[1]).length() > 1 ? res[1] : "0" + res[2]));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                if(d != null){
+                    c.setTime(d);
+                    res[3] = c.get(Calendar.DAY_OF_WEEK);
+                }else{
+                    res[3] = 0;
+                }
                 return res;
             }else{
                 return null;
@@ -197,7 +215,6 @@ public class Utils {
 //        //System.out.println(parsePrimeRunTime(" 1hour 65minutes "));
         //parseMoneyFromStr("sdfsdgf$1.00sd$233.55210");
         //System.out.println("transformTitle(\"asdasd (fuck)\") = " + transformTitle("asdasd (fuck)"));
-        ////System.out.println("parseYearMonthDay(\"November 15, 2222\") = " + Arrays.toString(parseYearMonthDay("May 29, 2008")));
     }
 
 }
