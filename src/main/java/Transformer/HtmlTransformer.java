@@ -214,9 +214,12 @@ public class HtmlTransformer {
                 }else if("Starring".equals(type)){
                     Elements es = e.select("dd > a");
                     for (Element ee : es) {
-                        String starring = ee.text();
+                        String[] starringsSplited = ee.text().split(",");
+                        for (int i = 0; i < starringsSplited.length; i++) {
+                            starringsSplited[i] = starringsSplited[i].trim();
+                            starrings.add(starringsSplited[i]);
+                        }
                         //System.out.println(starring);
-                        starrings.add(starring);
                     }
                 }
                 //System.out.println(e);
@@ -300,7 +303,7 @@ public class HtmlTransformer {
 
     public static void main(String[] args) {
         HtmlTransformer htmlTransformer = new HtmlTransformer();
-        File file = new File("C:\\Users\\Administrator\\Desktop\\B000YEINPG.html");
+        File file = new File("E:\\TestMovieInfos\\htmls\\B000V3NPJE.html");
         try{
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);

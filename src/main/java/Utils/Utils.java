@@ -138,7 +138,7 @@ public class Utils {
                             " " +
                             (String.valueOf(res[1]).length() > 1 ? res[1] : "0" + res[1]) +
                             " " +
-                            (String.valueOf(res[1]).length() > 1 ? res[1] : "0" + res[2]));
+                            (String.valueOf(res[2]).length() > 1 ? res[2] : "0" + res[2]));
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -208,8 +208,7 @@ public class Utils {
     }
 
     public static ArrayList removeDuplicated(ArrayList a){
-        HashSet s = new HashSet();
-        s.addAll(a);
+        HashSet s = new HashSet(a);
         ArrayList r = new ArrayList();
         r.addAll(s);
         return r;

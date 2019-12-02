@@ -11,26 +11,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
     public static void main(String[] args) {
-        String dir = "E:\\MovieInfos\\test";
-        String resPath = "E:\\MovieInfos\\res.json";
+        String dir = "E:\\TestMovieInfos\\htmls";
+        String resPath = "E:\\TestMovieInfos\\res.json";
         File htmlsDir = new File(dir);
-        String[] names = htmlsDir.list();
-        assert names != null;
+        File[] oldFiles = htmlsDir.listFiles((f) -> f.length() > 500 * 1000);
+        File[] newFiles = htmlsDir.listFiles((f) -> f.length() <= 500 * 1000);
+        assert oldFiles != null && newFiles != null;
         HtmlTransformer transformer = new HtmlTransformer();
         MovieDataLoader loader = new MovieDataLoader();
-        for (int i = 0; i < 1000 && i < names.length; i++) {
-            if(!names[i].endsWith(".html"))
-                continue;
-            String fileName = names[i];
-            System.out.println("processing " + fileName);
-            File htmlFile = new File(dir, fileName);
-            String content = readFile(htmlFile);
-            if(content == null){
-                continue;
-            }
-            String id = names[i].split("\\.html")[0];
-            loader.consumeMovie(transformer.parseDoc(id, Jsoup.parse(content)));
-        }
+        processFiles(oldFiles, transformer, loader);
+        processFiles(newFiles, transformer, loader);
         ConcurrentHashMap<Integer, ArrayList<Movie>> runTime2Movies = loader.getRunTime2Movies();
         StringBuilder jsonBuilder = new StringBuilder();
         runTime2Movies.forEach((k, v) -> {
@@ -38,7 +28,20 @@ public class Main {
                 jsonBuilder.append(JSON.toJSONString(movie));
             }
         });
-        saveFile(resPath, jsonBuilder.toString());
+        saveFile(resPath, jsonBuilder.toString().replaceAll("\n", ""));
+    }
+
+    private static void processFiles(File[] files, HtmlTransformer transformer, MovieDataLoader loader) {
+        for (int i = 0; i < 5000 && i < files.length; i++) {
+            File htmlFile = files[i];
+            System.out.println("processing " + htmlFile.getName());
+            String content = readFile(htmlFile);
+            if(content == null){
+                continue;
+            }
+            String id = htmlFile.getName().split("\\.html")[0];
+            loader.consumeMovie(transformer.parseDoc(id, Jsoup.parse(content)));
+        }
     }
 
     private static String readFile(File html){
