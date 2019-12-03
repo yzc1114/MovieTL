@@ -13,10 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MovieDataLoader {
 
-    private final ConcurrentHashMap<Integer, ArrayList<Movie>> runTime2Movies = new ConcurrentHashMap<>();
-    //To ensure thread safety, we need to add this runTime2Mutex.
-    // When the same ArrayList is being edited, no other thread has the chance to edit it.
-    private final ConcurrentHashMap<Integer, ReentrantLock> runTime2Mutex = new ConcurrentHashMap<>();
+    private final HashMap<Integer, ArrayList<Movie>> runTime2Movies = new HashMap<>();
 
     public void consumeMovie(Movie newMovie){
         if(newMovie == null){
@@ -24,23 +21,16 @@ public class MovieDataLoader {
         }
         Integer currRunTime = newMovie.getRunTime() == null ? 0 : newMovie.getRunTime();
         ArrayList<Movie> movies;
-        ReentrantLock mutex;
-        synchronized (runTime2Movies){
-            if(!runTime2Movies.containsKey(currRunTime)){
-                ArrayList<Movie> ms = new ArrayList<>(1);
-                ms.add(newMovie);
-                runTime2Movies.put(currRunTime, ms);
-                return;
-            }
-            synchronized (runTime2Mutex){
-                if(!runTime2Mutex.containsKey(currRunTime)){
-                    runTime2Mutex.put(currRunTime, new ReentrantLock());
-                }
-                mutex = runTime2Mutex.get(currRunTime);
-                mutex.lock();
-            }
-            movies = runTime2Movies.get(currRunTime);
+
+        if(!runTime2Movies.containsKey(currRunTime)){
+            ArrayList<Movie> ms = new ArrayList<>(1);
+            ms.add(newMovie);
+            runTime2Movies.put(currRunTime, ms);
+            return;
         }
+
+        movies = runTime2Movies.get(currRunTime);
+
         Movie sameMovie = null;
         for (Movie m : movies) {
             if(m.equals(newMovie)){
@@ -77,7 +67,7 @@ public class MovieDataLoader {
             //Never should happen
             System.out.println("plz debug");
         }
-        mutex.unlock();
+
     }
 
     private void addRightToLeft(ArrayList<String> l, ArrayList<String> r){
@@ -88,7 +78,7 @@ public class MovieDataLoader {
         }
     }
 
-    public ConcurrentHashMap<Integer, ArrayList<Movie>> getRunTime2Movies() {
+    public HashMap<Integer, ArrayList<Movie>> getRunTime2Movies() {
         return runTime2Movies;
     }
 
